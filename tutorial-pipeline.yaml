@@ -1,0 +1,44 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: tutorial-pipeline
+spec:
+  resources:
+  - name: source-repo
+    type: git
+  - name: web-image
+    type: image
+  tasks:
+  - name: build-docker-image
+    taskRef:
+      name: build-docker-image
+    params:
+    - name: pathToDockerFile
+      value: Dockerfile
+    - name: pathToContext
+      value: /workspace/docker-source
+    resources:
+      inputs:
+      - name: docker-source
+        resource: source-repo
+      outputs:
+      - name: builtImage
+        resource: web-image
+  - name: deploy-web
+    taskRef:
+      name: deploy-using-kubectl
+    runAfter:
+    - build-docker-image
+    params:
+    - name: path
+      value: /workspace/manifest-source/deployment.yaml
+    - name: yamlPathToImage
+      value: "spec.template.spec.containers[0].image"
+    resources:
+      inputs:
+      - name: manifest-source
+        resource: source-repo
+      - name: image
+        resource: web-image
+        from:
+        - build-docker-image

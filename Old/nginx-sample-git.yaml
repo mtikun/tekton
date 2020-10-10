@@ -6,4 +6,4 @@ spec:
   type: git
   params:
   - name: url
-    value: https://github.com/mtikun/tekton.git
+    value: https://github.com/mtikun/tekton

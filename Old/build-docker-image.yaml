@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-docker-image
+spec:
+  params:
+    - name: pathToDockerFile
+      type: string
+      description: The path to the dockerfile to build
+      default: /home/KAZUHIROMATSUI/Dockerfile
+  resources:
+    inputs:
+      - name: source-repo
+        type: git
+    outputs:
+      - name: builtImage
+        type: image
+  steps:
+    - name: build-nginx
+      image: docker
+      args: ["build -t mynginx $(params.pathToDockerFile)"]
+      volumeMounts:
+        - name: docker-socket
+          mountPath: /var/run/docker.sock
+  volumes:
+    - name: docker-socket
+      hostPath:
+        path: /var/run/docker.sock
+        type: Socket
