@@ -1,0 +1,9 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: nginx-sample-git
+spec:
+  type: git
+  params:
+  - name: url
+    value: https://github.com/mtikun/tekton
